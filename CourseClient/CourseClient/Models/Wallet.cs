@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace CourseClient.Models
 {
-    internal class Clients
+    public class Wallet
     {
+        public int WalletId { get; set; }
+        public double balance { get; set; }
 
+
+        public User User { get; set; } = null!;
     }
 }
