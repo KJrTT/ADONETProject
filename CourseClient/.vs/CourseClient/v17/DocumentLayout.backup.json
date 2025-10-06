@@ -1,0 +1,69 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\FILE\\ADONproject\\CourseClient\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|c:\\file\\adonproject\\courseclient\\courseclient\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|solutionrelative:courseclient\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|c:\\file\\adonproject\\courseclient\\courseclient\\models\\clients.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|solutionrelative:courseclient\\models\\clients.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|c:\\file\\adonproject\\courseclient\\courseclient\\courseclient.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|solutionrelative:courseclient\\courseclient.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "CourseClient.csproj",
+              "DocumentMoniker": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\CourseClient.csproj",
+              "RelativeDocumentMoniker": "CourseClient\\CourseClient.csproj",
+              "ToolTip": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\CourseClient.csproj",
+              "RelativeToolTip": "CourseClient\\CourseClient.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-10-06T07:57:44.566Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Clients.cs",
+              "DocumentMoniker": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Models\\Clients.cs",
+              "RelativeDocumentMoniker": "CourseClient\\Models\\Clients.cs",
+              "ToolTip": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Models\\Clients.cs",
+              "RelativeToolTip": "CourseClient\\Models\\Clients.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-06T07:45:22.094Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Program.cs",
+              "RelativeDocumentMoniker": "CourseClient\\Program.cs",
+              "ToolTip": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Program.cs",
+              "RelativeToolTip": "CourseClient\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-06T06:54:39.648Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
