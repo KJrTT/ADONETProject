@@ -14,13 +14,16 @@ CREATE TABLE Wallet (
     balance DECIMAL(10,2) not NULL default 0
 );
 
--- 4. Teacher
-CREATE TABLE Teacher (
-    TeacherId INT IDENTITY(1,1) PRIMARY KEY,
+
+
+
+-- 6. Client
+CREATE TABLE Users (
+    UserId INT IDENTITY(1,1) PRIMARY KEY,
     first_name NVARCHAR(255) NOT NULL,
     last_name NVARCHAR(255) NOT NULL,
     password NVARCHAR(300) NOT NULL,
-    teacher_email NVARCHAR(255) NOT NULL unique,
+    user_email NVARCHAR(255) NOT NULL unique,
     level_access_id INT NOT NULL,
     wallet_id INT NOT NULL,
     FOREIGN KEY (level_access_id) REFERENCES LevelAccess(AccessId),
@@ -34,31 +37,19 @@ CREATE TABLE Course (
     data_start DATETIME NOT NULL,
     data_end DATETIME NOT NULL,
     price DECIMAL(10,2) NULL,
-    teacher_id INT NOT NULL,
-    FOREIGN KEY (teacher_id) REFERENCES Teacher(TeacherId),
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES Users(UserId)
 );
 
--- 6. Client
-CREATE TABLE Client (
-    ClientId INT IDENTITY(1,1) PRIMARY KEY,
-    first_name NVARCHAR(255) NOT NULL,
-    last_name NVARCHAR(255) NOT NULL,
-    password NVARCHAR(300) NOT NULL,
-    client_email NVARCHAR(255) NOT NULL unique,
-    level_access_id INT NOT NULL,
-    wallet_id INT NOT NULL,
-    FOREIGN KEY (level_access_id) REFERENCES LevelAccess(AccessId),
-    FOREIGN KEY (wallet_id) REFERENCES Wallet(WalletId)
-);
 
 -- 7. ClientCourses (связь многие-ко-многим)
-CREATE TABLE ClientCourses (
+CREATE TABLE UserCourses (
     Id INT IDENTITY(1,1) PRIMARY KEY,  -- Основной ключ
     CourseId INT NOT NULL,
-    ClientId INT NOT NULL,
-    UNIQUE (CourseId, ClientId),  -- Уникальное ограничение
+    UserId INT NOT NULL,
+    UNIQUE (CourseId, UserId),  -- Уникальное ограничение
     FOREIGN KEY (CourseId) REFERENCES Course(CourseId),
-    FOREIGN KEY (ClientId) REFERENCES Client(ClientId)
+    FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
 ```
 
