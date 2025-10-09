@@ -9,7 +9,7 @@ CREATE TABLE LevelAccess (
 );
 
 -- 2. Wallet
-CREATE TABLE Wallet (
+CREATE TABLE Wallets (
     WalletId INT IDENTITY(1,1) PRIMARY KEY,
     balance DECIMAL(10,2) not NULL default 0
 );
