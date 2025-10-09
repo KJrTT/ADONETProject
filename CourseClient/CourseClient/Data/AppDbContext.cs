@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CourseClient.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -11,7 +11,7 @@ namespace CourseClient.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Course> Courses { get; set; }
-        public DbSet<LevelAccess> LevelAccesss { get; set; }
+        public DbSet<LevelAccess> LevelAccess { get; set; }
         public DbSet<UserCourse> UserCourses { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
 

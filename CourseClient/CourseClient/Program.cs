@@ -1,61 +1,20 @@
-﻿using System;
-using System.Data.SqlClient;
+using System;
+using System.Threading.Tasks;
 using CourseClient.Data;
+using CourseClient.Services;
+using CourseClient.Views;
 using Microsoft.EntityFrameworkCore;
 
 class Program
 {
-    static void Main()
+    static async Task Main()
     {
-        try
-        {
-            using AppDbContext db = new AppDbContext();
+        var registrationService = new UserRegistrationService();
+        var authService = new AuthService();
+        var adminService = new AdminService();
 
-
-            // Проверка подключения
-            bool canConnect = db.Database.CanConnect();
-
-            if (canConnect)
-            {
-                Console.WriteLine("✅ Подключение к базе данных успешно!");
-                Console.WriteLine($"Имя базы данных: {db.Database.GetDbConnection().Database}");
-                Console.WriteLine($"Сервер: {db.Database.GetDbConnection().DataSource}");
-            }
-            else
-            {
-                Console.WriteLine("❌ Не удалось подключиться к базе данных");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"❌ Ошибка подключения: {ex.Message}");
-        }
-
-        Console.ReadKey();
+        var mainView = new ConsoleMainView(registrationService, authService, adminService);
+        await mainView.RunAsync();
     }
-
-    //static string connectionString = "Server=A1208339\\SQLEXPRESS;Database=SaleCourses;Trusted_Connection=true;TrustServerCertificate=true";
-
-    //static void Main()
-    //{
-    //    CheckConnection();
-    //}
-
-    //static void CheckConnection()
-    //{
-    //    try
-    //    {
-    //        using var connection = new SqlConnection(connectionString);
-    //        connection.Open();
-    //        Console.WriteLine("✅ Подключение к базе данных успешно!");
-    //        Console.WriteLine($"Server: {connection.DataSource}");
-    //        Console.WriteLine($"Database: {connection.Database}");
-    //        Console.WriteLine($"State: {connection.State}");
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Console.WriteLine($"❌ Ошибка подключения: {ex.Message}");
-    //    }
-    //}
 }
 

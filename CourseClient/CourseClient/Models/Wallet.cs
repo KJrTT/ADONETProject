@@ -9,7 +9,7 @@ namespace CourseClient.Models
     public class Wallet
     {
         public int WalletId { get; set; }
-        public double balance { get; set; }
+        public decimal balance { get; set; }
 
 
         public User User { get; set; } = null!;

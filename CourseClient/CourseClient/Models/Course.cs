@@ -12,7 +12,7 @@ namespace CourseClient.Models
         public string? name_course {  get; set; }
         public DateTime data_start { get; set; }
         public DateTime data_end { get; set; }
-        public double price { get; set; }
+        public decimal price { get; set; }
         public int user_id { get; set; }
 
 
