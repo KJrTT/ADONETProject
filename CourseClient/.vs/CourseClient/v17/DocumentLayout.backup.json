@@ -3,8 +3,16 @@
   "WorkspaceRootPath": "C:\\FILE\\ADONproject\\CourseClient\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|c:\\file\\adonproject\\courseclient\\courseclient\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|solutionrelative:courseclient\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|c:\\file\\adonproject\\courseclient\\courseclient\\views\\consolemainview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|solutionrelative:courseclient\\views\\consolemainview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|c:\\file\\adonproject\\courseclient\\courseclient\\views\\teacherview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|solutionrelative:courseclient\\views\\teacherview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|c:\\file\\adonproject\\courseclient\\courseclient\\services\\sqlconnectionfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -13,10 +21,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|c:\\file\\adonproject\\courseclient\\courseclient\\views\\consoleregistrationview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|solutionrelative:courseclient\\views\\consoleregistrationview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|c:\\file\\adonproject\\courseclient\\courseclient\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|solutionrelative:courseclient\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{EAF4962C-7F5C-4FB6-9E4C-F89D9EB7BB28}|CourseClient\\CourseClient.csproj|c:\\file\\adonproject\\courseclient\\courseclient\\services\\adminservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -37,7 +41,20 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
+              "Title": "TeacherView.cs",
+              "DocumentMoniker": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Views\\TeacherView.cs",
+              "RelativeDocumentMoniker": "CourseClient\\Views\\TeacherView.cs",
+              "ToolTip": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Views\\TeacherView.cs",
+              "RelativeToolTip": "CourseClient\\Views\\TeacherView.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-12T09:52:40.518Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "SqlConnectionFactory.cs",
               "DocumentMoniker": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Services\\SqlConnectionFactory.cs",
               "RelativeDocumentMoniker": "CourseClient\\Services\\SqlConnectionFactory.cs",
@@ -50,46 +67,46 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "ConsoleRegistrationView.cs",
               "DocumentMoniker": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Views\\ConsoleRegistrationView.cs",
               "RelativeDocumentMoniker": "CourseClient\\Views\\ConsoleRegistrationView.cs",
               "ToolTip": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Views\\ConsoleRegistrationView.cs",
               "RelativeToolTip": "CourseClient\\Views\\ConsoleRegistrationView.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADYAAAAAAAAAAAAYwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-12T09:41:57.349Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Program.cs",
               "RelativeDocumentMoniker": "CourseClient\\Program.cs",
-              "ToolTip": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Program.cs",
-              "RelativeToolTip": "CourseClient\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
+              "ToolTip": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Program.cs*",
+              "RelativeToolTip": "CourseClient\\Program.cs*",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAEwBgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-12T09:38:18.359Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "ConsoleMainView.cs",
               "DocumentMoniker": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Views\\ConsoleMainView.cs",
               "RelativeDocumentMoniker": "CourseClient\\Views\\ConsoleMainView.cs",
-              "ToolTip": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Views\\ConsoleMainView.cs*",
-              "RelativeToolTip": "CourseClient\\Views\\ConsoleMainView.cs*",
-              "ViewState": "AgIAADUAAAAAAAAAAAA3wDwAAAAaAAAAAAAAAA==",
+              "ToolTip": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Views\\ConsoleMainView.cs",
+              "RelativeToolTip": "CourseClient\\Views\\ConsoleMainView.cs",
+              "ViewState": "AgIAADYAAAAAAAAAAAAYwEoAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-12T09:38:16.222Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "AdminService.cs",
               "DocumentMoniker": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient\\Services\\AdminService.cs",
               "RelativeDocumentMoniker": "CourseClient\\Services\\AdminService.cs",
@@ -97,12 +114,11 @@
               "RelativeToolTip": "CourseClient\\Services\\AdminService.cs",
               "ViewState": "AgIAACMAAAAAAAAAAAASwBgAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T09:27:50.204Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-12T09:27:50.204Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "AdminView.cs",
               "DocumentMoniker": "C:\\Users\\Profo\\AppData\\Local\\SourceServer\\babc8d7f003ac3cbb58ed63e0251f7354fcec36efc1c51c14940c3fdf802a446\\CourseClient\\CourseClient\\Views\\AdminView.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\Users\\Profo\\AppData\\Local\\SourceServer\\babc8d7f003ac3cbb58ed63e0251f7354fcec36efc1c51c14940c3fdf802a446\\CourseClient\\CourseClient\\Views\\AdminView.cs",
@@ -110,8 +126,7 @@
               "RelativeToolTip": "..\\..\\..\\Users\\Profo\\AppData\\Local\\SourceServer\\babc8d7f003ac3cbb58ed63e0251f7354fcec36efc1c51c14940c3fdf802a446\\CourseClient\\CourseClient\\Views\\AdminView.cs",
               "ViewState": "AgIAAC4AAAAAAAAAAAAmwEUAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-12T09:29:56.436Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-12T09:29:56.436Z"
             }
           ]
         }

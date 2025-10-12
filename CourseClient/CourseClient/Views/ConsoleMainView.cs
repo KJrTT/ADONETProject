@@ -9,12 +9,14 @@ namespace CourseClient.Views
         private readonly IUserRegistrationService _registrationService;
         private readonly IAuthService _authService;
         private readonly IAdminService _adminService;
+        private readonly ITeacherService _teacherService;
 
-        public ConsoleMainView(IUserRegistrationService registrationService, IAuthService authService, IAdminService adminService)
+        public ConsoleMainView(IUserRegistrationService registrationService, IAuthService authService, IAdminService adminService, ITeacherService teacherService)
         {
             _registrationService = registrationService;
             _authService = authService;
             _adminService = adminService; // Инициализируем
+            _teacherService = teacherService;
         }
 
         public async Task RunAsync()
@@ -60,7 +62,8 @@ namespace CourseClient.Views
                     await adminView.RunAsync();
                     break;
                 case "Teacher":
-                    // Реализация интерфейса
+                    var teacherView = new TeacherView(login.UserId, _authService, _teacherService);
+                    await teacherView.RunAsync();
                     break;
                 case "Student":
                     var studentView = new StudentView(login.UserId, _authService);

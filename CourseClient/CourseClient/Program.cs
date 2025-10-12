@@ -15,8 +15,9 @@ class Program
         var registrationService = new UserRegistrationService();
         var authService = new AuthService();
         var adminService = new AdminService(dbContext);
+        var teacherService = new TeacherService(dbContext);
 
-        var mainView = new ConsoleMainView(registrationService, authService, adminService);
+        var mainView = new ConsoleMainView(registrationService, authService, adminService, teacherService);
         await mainView.RunAsync();
     }
 }
