@@ -71,3 +71,6 @@ FROM (VALUES
 JOIN Course c ON data.CourseId = c.CourseId
 JOIN Client cl ON data.ClientId = cl.ClientId;
 ```
+<img width="1046" height="437" alt="image" src="https://github.com/user-attachments/assets/ca13ef9c-5de8-4f68-a353-caf06b666f88" />
+
+
