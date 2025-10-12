@@ -19,6 +19,11 @@ namespace CourseClient.Services
     {
         private readonly AppDbContext _context;
 
+        public AdminService(AppDbContext context)
+        {
+            _context = context;
+        }
+
         public async Task<bool> UpdateUserRoleAsync(int userId, int newRole)
         {
             var user = await _context.Users

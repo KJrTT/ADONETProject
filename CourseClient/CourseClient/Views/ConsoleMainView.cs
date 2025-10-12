@@ -66,6 +66,9 @@ namespace CourseClient.Views
                     var studentView = new StudentView(login.UserId, _authService);
                     await studentView.RunAsync(login);
                     break;
+                case "Baned":
+                    Console.WriteLine("Ваш аккаунт забанен!!!");
+                    break;
                 default:
                     Console.WriteLine("Неизвестная роль");
                     break;
