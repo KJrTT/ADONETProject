@@ -44,7 +44,6 @@ namespace CourseClient.Test
             Assert.Equal(_testPassword, result.GeneratedPassword);
             Console.WriteLine($"\u001b[32mСгенерированные пароли совпадают\u001b[0m");
             Console.WriteLine($"\u001b[32m Все тесты пройдены\u001b[0m");
-            Console.WriteLine();
             Console.WriteLine("=============================");
         }
 
@@ -154,7 +153,7 @@ namespace CourseClient.Test
         {
             // Arrange
             var service = new AdminService();
-            int existingCourseId = 7;
+            int existingCourseId = 10;
 
             Console.WriteLine("🧪 Тестирование удаления курса");
             Console.WriteLine("=================================");
@@ -184,4 +183,58 @@ namespace CourseClient.Test
             Assert.True(result, "Курс должен быть успешно удален");
         }
     }
+
+
+    public class TeacherRegistrationTests
+    {
+
+
+        [Fact]
+        public async Task TestTeacherCreateCourseSuccess()
+        {
+
+            Console.WriteLine();
+            Console.WriteLine("=============================");
+            var teacherService = new TeacherService();
+            var registrationservice = new UserRegistrationService();
+
+
+            var courseName = "Основы C#";
+            var startDate = DateTime.Today.AddDays(1);
+            var endDate = startDate.AddDays(14);
+            var price = 1999.99m;
+
+            Console.WriteLine($"\u001b[36mПопытка создать курс: '{courseName}', даты {startDate:yyyy-MM-dd} - {endDate:yyyy-MM-dd}, цена {price}\u001b[0m");
+            var created = await teacherService.CreateCourseAsync(1010, courseName, startDate, endDate, price);
+
+            Console.WriteLine($"\u001b[36mРезультат создания курса: {created}\u001b[0m");
+            Assert.True(created);
+            Console.WriteLine("\u001b[32mКурс успешно создан (ожидалось true)\u001b[0m");
+            Console.WriteLine();
+            Console.WriteLine("=============================");
+        }
+
+        [Fact]
+        public async Task TestTeacherCreateCourseFail_InvalidName()
+        {
+            Console.WriteLine();
+            Console.WriteLine("=============================");
+            var teacherService = new TeacherService();
+
+            var invalidName = "  ";
+            var startDate = DateTime.Today.AddDays(1);
+            var endDate = startDate.AddDays(7);
+            var price = 1000m;
+
+            Console.WriteLine($"\u001b[33mПопытка создать курс с некорректным именем: '{invalidName}'\u001b[0m");
+            var created = await teacherService.CreateCourseAsync(1, invalidName, startDate, endDate, price);
+
+            Console.WriteLine($"\u001b[36mРезультат создания курса с некорректными данными: {created}\u001b[0m");
+            Assert.False(created);
+            Console.WriteLine("\u001b[32mСоздание курса ожидаемо неуспешно (ожидалось false)\u001b[0m");
+            Console.WriteLine();
+            Console.WriteLine("=============================");
+        }
+    }
 }
+

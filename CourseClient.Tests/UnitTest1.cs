@@ -188,16 +188,17 @@ namespace CourseClient.Test
 
     public class TeacherRegistrationTests
     {
+
+
         [Fact]
         public async Task TestTeacherCreateCourseSuccess()
         {
+
             Console.WriteLine();
             Console.WriteLine("=============================");
             var teacherService = new TeacherService();
             var registrationservice = new UserRegistrationService();
 
-            Console.WriteLine($"\u001b[33mРегистрация пользователя как преподавателя для создания курса: {_testEmail}\u001b[0m");
-            var reg = await registrationservice.RegisterClientAsync("Сергей", "Сергеев", _testEmail, _testPassword);
 
             var courseName = "Основы C#";
             var startDate = DateTime.Today.AddDays(1);
@@ -205,7 +206,7 @@ namespace CourseClient.Test
             var price = 1999.99m;
 
             Console.WriteLine($"\u001b[36mПопытка создать курс: '{courseName}', даты {startDate:yyyy-MM-dd} - {endDate:yyyy-MM-dd}, цена {price}\u001b[0m");
-            var created = await teacherService.CreateCourseAsync(reg.ClientId, courseName, startDate, endDate, price);
+            var created = await teacherService.CreateCourseAsync(1010, courseName, startDate, endDate, price);
 
             Console.WriteLine($"\u001b[36mРезультат создания курса: {created}\u001b[0m");
             Assert.True(created);

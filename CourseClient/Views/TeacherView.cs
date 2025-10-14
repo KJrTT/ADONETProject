@@ -26,9 +26,10 @@ namespace CourseClient.Views
             {
                 Console.Clear();
                 Console.WriteLine("\n=== ПРЕПОДАВАТЕЛЬ ===");
-                Console.WriteLine("1) Мои курсы");
-                Console.WriteLine("2) Посмотреть записанных на курс");
-                Console.WriteLine("3) Удалить мой курс");
+                Console.WriteLine("1) Добавить курс");
+                Console.WriteLine("2) Мои курсы");
+                Console.WriteLine("3) Посмотреть записанных на курс");
+                Console.WriteLine("4) Удалить мой курс");
                 Console.WriteLine("0) Выход");
                 Console.Write("Ваш выбор: ");
 
@@ -36,12 +37,15 @@ namespace CourseClient.Views
                 switch (choice)
                 {
                     case "1":
-                        await ShowMyCoursesAsync();
+                        await CreateCourseAsync();
                         break;
                     case "2":
-                        await ShowEnrolledUsersAsync();
+                        await ShowMyCoursesAsync();
                         break;
                     case "3":
+                        await ShowEnrolledUsersAsync();
+                        break;
+                    case "4":
                         await DeleteOwnCourseAsync();
                         break;
                     case "0":
@@ -76,6 +80,62 @@ namespace CourseClient.Views
             {
                 Console.WriteLine($"ID: {c.CourseId} | {c.name_course} | {c.data_start:yyyy-MM-dd} → {c.data_end:yyyy-MM-dd} | {c.price:C}");
             }
+            Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+            Console.ReadKey();
+        }
+
+        private async Task CreateCourseAsync()
+        {
+            Console.Write("Название курса: ");
+            var name = Console.ReadLine() ?? string.Empty;
+
+            Console.Write("Дата начала (yyyy-MM-dd): ");
+            if (!DateTime.TryParse(Console.ReadLine(), out DateTime startDate))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Некорректная дата начала");
+                Console.ResetColor();
+                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.Write("Дата окончания (yyyy-MM-dd): ");
+            if (!DateTime.TryParse(Console.ReadLine(), out DateTime endDate))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Некорректная дата окончания");
+                Console.ResetColor();
+                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.Write("Цена: ");
+            if (!decimal.TryParse(Console.ReadLine(), out decimal price))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Некорректная цена");
+                Console.ResetColor();
+                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                Console.ReadKey();
+                return;
+            }
+
+            var ok = await _teacherService.CreateCourseAsync(_teacherId, name, startDate, endDate, price);
+            if (ok)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Курс добавлен");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Не удалось добавить курс. Проверьте данные.");
+                Console.ResetColor();
+            }
+
             Console.WriteLine("\nНажмите любую клавишу для продолжения...");
             Console.ReadKey();
         }

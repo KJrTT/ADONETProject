@@ -13,11 +13,12 @@ namespace CourseClient.Services
         Task<List<Course>> GetMyCoursesAsync(int teacherId);
         Task<List<User>> GetEnrolledUsersAsync(int teacherId, int courseId);
         Task<bool> DeleteOwnCourseAsync(int teacherId, int courseId);
+        Task<bool> CreateCourseAsync(int teacherId, string name, DateTime startDate, DateTime endDate, decimal price);
     }
 
     public sealed class TeacherService : ITeacherService
     {
-        
+
 
         public async Task<List<Course>> GetMyCoursesAsync(int teacherId)
         {
@@ -82,6 +83,32 @@ namespace CourseClient.Services
                 await transaction.RollbackAsync();
                 return false;
             }
+        }
+
+        public async Task<bool> CreateCourseAsync(int teacherId, string name, DateTime startDate, DateTime endDate, decimal price)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return false;
+
+            if (endDate < startDate)
+                return false;
+
+            if (price < 0)
+                return false;
+
+            using var db = new AppDbContext();
+            var course = new Course
+            {
+                name_course = name.Trim(),
+                data_start = startDate,
+                data_end = endDate,
+                price = price,
+                UserID = teacherId
+            };
+
+            await db.Courses.AddAsync(course);
+            await db.SaveChangesAsync();
+            return true;
         }
     }
 }
