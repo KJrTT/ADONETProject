@@ -9,7 +9,7 @@ namespace CourseClient.Data
     {
 
 
-        static string connectionString = "Server=192.168.9.203\\sqlexpress;Database=ErofeevKirill;User Id=student1;Password=123456;Encrypt=false;";
+        static string connectionString = "Server=A1208339\\SQLEXPRESS;Database=SaleCourses;Trusted_Connection=true;Encrypt=false";
 
         public DbSet<User> Users { get; set; }
         public DbSet<Course> Courses { get; set; }
