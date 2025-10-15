@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CourseClient.Services;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CourseClient.Views
 {
@@ -31,30 +32,29 @@ namespace CourseClient.Views
                 Console.Write("Email: ");
                 string email = Console.ReadLine() ?? string.Empty;
 
-                Console.Write("Длина пароля (по умолчанию 12): ");
-                if (!int.TryParse(Console.ReadLine(), out int passwordLength) || passwordLength < 8)
+                Console.Write("Длина пароля (по умолчанию длина пароля: 12): ");
+                if (!int.TryParse(Console.ReadLine(), out int passwordLength) || passwordLength < 8 && passwordLength < 50)
                     passwordLength = 12;
-
                 Console.WriteLine("\nРегистрируем...");
 
                 bool hasErrors = false;
 
-                if (string.IsNullOrWhiteSpace(firstName))
+                if (!ValidFirstName.ValidFirstNamefunction(firstName))
                 {
+
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Имя не может быть пустым");
+                    Console.WriteLine("Имя заполнено некорректно");
                     Console.ResetColor();
                     hasErrors = true;
                 }
-
-                if (string.IsNullOrWhiteSpace(lastName))
+                if (!ValidLastName.ValidLastNamefunction(lastName))
                 {
+
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Фамилия не может быть пустой");
+                    Console.WriteLine("Фамилия заполнена некорректно");
                     Console.ResetColor();
                     hasErrors = true;
                 }
-
                 if (!IsValidEmail.ValidEmail(email))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -132,8 +132,55 @@ namespace CourseClient.Views
 
                 try
                 {
-                    string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-                    return Regex.IsMatch(email, pattern, RegexOptions.IgnoreCase);
+                    string pattern = @"^[a-zA-Z0-9.!#$&'*+/=?^_`{|}~-]+" +
+                @"@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?" +
+                @"(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
+
+                    var isValid = Regex.IsMatch(email, pattern);
+
+                    // Дополнительная проверка на опасные последовательности
+                    if (isValid && email.Contains("%00"))
+                        return false;
+
+                    return isValid;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+        public class ValidFirstName
+        {
+            public static bool ValidFirstNamefunction(string first_name)
+            {
+                if (string.IsNullOrEmpty(first_name))
+                {
+                    return false;
+                }
+                try
+                {
+                    string pattern = @"^[a-zA-Zа-яА-ЯёЁ'\-\s]{2,50}$";
+                    return Regex.IsMatch(first_name, pattern);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+        public class ValidLastName
+        {
+            public static bool ValidLastNamefunction( string last_name)
+            {
+                if (string.IsNullOrEmpty(last_name))
+                {
+                    return false;
+                }
+                try
+                {
+                    string pattern = @"^[a-zA-Zа-яА-ЯёЁ'\-\s]{2,50}$";
+                    return Regex.IsMatch(last_name, pattern);
                 }
                 catch
                 {

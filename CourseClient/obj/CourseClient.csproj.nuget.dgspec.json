@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\FILE\\ADONproject\\CourseClient\\CourseClient.csproj": {}
+    "C:\\Users\\studentcoll\\Desktop\\ado(БД)\\CourseClient\\CourseClient.csproj": {}
   },
   "projects": {
-    "C:\\FILE\\ADONproject\\CourseClient\\CourseClient.csproj": {
+    "C:\\Users\\studentcoll\\Desktop\\ado(БД)\\CourseClient\\CourseClient.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient.csproj",
+        "projectUniqueName": "C:\\Users\\studentcoll\\Desktop\\ado(БД)\\CourseClient\\CourseClient.csproj",
         "projectName": "CourseClient",
-        "projectPath": "C:\\FILE\\ADONproject\\CourseClient\\CourseClient.csproj",
-        "packagesPath": "C:\\Users\\Profo\\.nuget\\packages\\",
-        "outputPath": "C:\\FILE\\ADONproject\\CourseClient\\obj\\",
+        "projectPath": "C:\\Users\\studentcoll\\Desktop\\ado(БД)\\CourseClient\\CourseClient.csproj",
+        "packagesPath": "C:\\Users\\studentcoll\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\studentcoll\\Desktop\\ado(БД)\\CourseClient\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Profo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\studentcoll\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -44,7 +44,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.200"
       },
       "frameworks": {
         "net8.0": {
@@ -91,7 +91,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

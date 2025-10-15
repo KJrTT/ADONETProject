@@ -134,8 +134,7 @@
               "RelativeToolTip": "CourseClient\\Services\\TeacherService.cs",
               "ViewState": "AgIAAFkAAAAAAAAAAAAkwGgAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-13T10:16:34.032Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-13T10:16:34.032Z"
             },
             {
               "$type": "Document",
@@ -159,8 +158,7 @@
               "RelativeToolTip": "CourseClient\\Views\\TeacherView.cs",
               "ViewState": "AgIAALQAAAAAAAAAAAAkwNIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-13T10:08:53.437Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-13T10:08:53.437Z"
             },
             {
               "$type": "Document",
@@ -168,9 +166,9 @@
               "Title": "Tests.cs",
               "DocumentMoniker": "C:\\FILE\\ADONproject\\CourseClient\\Test\\Tests.cs",
               "RelativeDocumentMoniker": "CourseClient\\Test\\Tests.cs",
-              "ToolTip": "C:\\FILE\\ADONproject\\CourseClient\\Test\\Tests.cs*",
-              "RelativeToolTip": "CourseClient\\Test\\Tests.cs*",
-              "ViewState": "AgIAAMAAAAAAAAAAAAAAwMsAAAA2AAAAAAAAAA==",
+              "ToolTip": "C:\\FILE\\ADONproject\\CourseClient\\Test\\Tests.cs",
+              "RelativeToolTip": "CourseClient\\Test\\Tests.cs",
+              "ViewState": "AgIAAC4AAAAAAAAAAAAAAEIAAABCAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-13T11:21:34.095Z",
               "EditorCaption": ""

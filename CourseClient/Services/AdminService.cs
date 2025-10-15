@@ -22,16 +22,23 @@ namespace CourseClient.Services
         public async Task<bool> UpdateUserRoleAsync(int userId, int newRoleId) 
         {
             using var db = new AppDbContext();
-            var user = await db.Users
-                .FirstOrDefaultAsync(u => u.UserId == userId);
 
-            if (user == null)
+            var userExists = await db.Users.AnyAsync(u => u.UserId == userId);
+
+            if (!userExists)
                 return false;
 
-            user.level_access_id = newRoleId; // Или user.LevelAccess, в зависимости от вашей модели
-            await db.SaveChangesAsync();
+            try
+            {
+                var result = await db.Users.Where(u => u.UserId == userId).ExecuteUpdateAsync(setters => setters.SetProperty(u => u.level_access_id, newRoleId));
+                return result > 0;
+            }
+            catch (Exception ex) {
+                Console.WriteLine($"Error updating user role: {ex.Message}");
+                return false;
+            }
 
-            return true;
+            
         }
         public async Task<bool> DelCourse(int courseId)
         {
@@ -49,6 +56,7 @@ namespace CourseClient.Services
                 {
                     db.UserCourses.RemoveRange(userCourses);
                 }
+
                 // 2. Удаляем сам курс
                 var course = await db.Courses
                     .FirstOrDefaultAsync(c => c.CourseId == courseId);
@@ -64,10 +72,9 @@ namespace CourseClient.Services
 
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
                 await transaction.RollbackAsync();
-                Console.WriteLine($"❌ Ошибка при удалении курса: {ex.Message}");
                 return false;
             }
         }
