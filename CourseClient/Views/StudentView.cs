@@ -51,7 +51,6 @@ namespace CourseClient.Views
                 Console.WriteLine("7) Удалить аккаунт");
                 Console.WriteLine("8) Пополнить баланс");
                 Console.WriteLine("9) Просмотр баланса");
-                Console.WriteLine("10) Поиск курсов по названию курса");
                 Console.WriteLine("0) Выход");
                 Console.Write("Ваш выбор: ");
 
