@@ -311,7 +311,7 @@ namespace CourseClient.Test
                 var created = await teacherService.CreateCourseAsync(checkuserid, courseName, startDate, endDate, price);
 
                 Console.WriteLine($"\u001b[36mРезультат создания курса: {created}\u001b[0m");
-                Assert.True(created);
+                Assert.True(created.Success);
                 Console.WriteLine("\u001b[32mКурс успешно создан (ожидалось true)\u001b[0m");
                 Console.WriteLine();
                 Console.WriteLine("=============================");
@@ -343,7 +343,7 @@ namespace CourseClient.Test
             var created = await teacherService.CreateCourseAsync(1, invalidName, startDate, endDate, price);
 
             Console.WriteLine($"\u001b[36mРезультат создания курса с некорректными данными: {created}\u001b[0m");
-            Assert.False(created);
+            Assert.False(created.Success);
             Console.WriteLine("\u001b[32mСоздание курса ожидаемо неуспешно (ожидалось false)\u001b[0m");
             Console.WriteLine();
             Console.WriteLine("=============================");

@@ -162,7 +162,7 @@ namespace CourseClient.Test
                     Console.WriteLine($"\u001b[90mУдалено связанных курсов: {courses.Count}\u001b[0m");
                 }
 
-
+                
                 var deleteduser = await db.Users.Where(u => u.UserId == userId).ExecuteDeleteAsync();
 
                 Console.WriteLine($"\u001b[90mУдален тестовый пользователь с ID: {userId}\u001b[0m");
@@ -184,7 +184,7 @@ namespace CourseClient.Test
             using var db = new AppDbContext();
             try
             {
-
+                
                 var reguser = await registrationService.RegisterClientAsync("Петр", "Петров", _testEmail, _testPassword);
                 createdUserId = reguser.ClientId;
                 var checkuserid = await db.Users.Where(u => u.user_email == _testEmail).Select(u => u.UserId).FirstOrDefaultAsync();
@@ -208,7 +208,7 @@ namespace CourseClient.Test
 
                 Console.WriteLine("=============================");
             }
-            finally
+            finally 
             {
                 if (createdUserId > 0)
                 {
@@ -225,10 +225,10 @@ namespace CourseClient.Test
         {
             var service = new AdminService();
             var createdUserId = 0;
-            using var db = new AppDbContext();
+            using var db = new AppDbContext(); 
             var registrationservice = new UserRegistrationService();
             var teacherService = new TeacherService();
-
+            
             Console.WriteLine();
             Console.WriteLine("=============================");
             try
@@ -289,7 +289,7 @@ namespace CourseClient.Test
             Console.WriteLine();
             Console.WriteLine("=============================");
             var createdUserId = 0;
-            using var db = new AppDbContext();
+            using var db = new AppDbContext(); 
             var teacherService = new TeacherService();
             var registrationservice = new UserRegistrationService();
 
@@ -311,12 +311,12 @@ namespace CourseClient.Test
                 var created = await teacherService.CreateCourseAsync(checkuserid, courseName, startDate, endDate, price);
 
                 Console.WriteLine($"\u001b[36mРезультат создания курса: {created}\u001b[0m");
-                Assert.True(created);
+                Assert.True(created.Success);
                 Console.WriteLine("\u001b[32mКурс успешно создан (ожидалось true)\u001b[0m");
                 Console.WriteLine();
                 Console.WriteLine("=============================");
             }
-            finally
+            finally 
             {
                 if (createdUserId > 0)
                 {
@@ -343,7 +343,7 @@ namespace CourseClient.Test
             var created = await teacherService.CreateCourseAsync(1, invalidName, startDate, endDate, price);
 
             Console.WriteLine($"\u001b[36mРезультат создания курса с некорректными данными: {created}\u001b[0m");
-            Assert.False(created);
+            Assert.False(created.Success);
             Console.WriteLine("\u001b[32mСоздание курса ожидаемо неуспешно (ожидалось false)\u001b[0m");
             Console.WriteLine();
             Console.WriteLine("=============================");

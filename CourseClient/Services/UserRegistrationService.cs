@@ -12,17 +12,26 @@ namespace CourseClient.Services
     public interface IUserRegistrationService
     {
         Task<RegistrationResult> RegisterClientAsync(string firstName, string lastName, string email, string password);
+        Task<bool> Checkpassword(string password);
     }
 
     public sealed class UserRegistrationService : IUserRegistrationService
     {
+        public async Task<bool> Checkpassword(string password)
+        {
+            using var db = new AppDbContext();
+            var hashpassword = HashPassword(password);
+            var existspassword = await db.Users.Where(u => u.password == hashpassword).FirstOrDefaultAsync();
+            return existspassword != null;
+        }
+
         public async Task<RegistrationResult> RegisterClientAsync(string firstName, string lastName, string email, string password)
         {
             using var db = new AppDbContext();
 
             var exists = await db.Users.AnyAsync(u => u.user_email == email);
             if (exists)
-                throw new InvalidOperationException("Email already exists");
+                throw new InvalidOperationException("Такая почта уже существует");
 
             string hashedPassword = HashPassword(password);
 

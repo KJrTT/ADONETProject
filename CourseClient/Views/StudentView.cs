@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Identity.Client;
+using System.Diagnostics.Metrics;
+using System.Data.Common;
 
 
 
@@ -38,17 +40,18 @@ namespace CourseClient.Views
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("\n=== СТУДЕНТ ===");
+                Console.WriteLine("\n========================================== Интерфейс Студента ========================================== \n");
+                await ShowinfoUser(_userId);
                 Console.WriteLine("1) Мои курсы");
                 Console.WriteLine("2) Доступные курсы");
                 Console.WriteLine("3) Бесплатные курсы");
                 Console.WriteLine("4) Записаться на курс");
                 Console.WriteLine("5) Отписаться от курса");
-                Console.WriteLine("6) Обновить пароль");
+                Console.WriteLine("6) Редактирование пользователя");
                 Console.WriteLine("7) Удалить аккаунт");
                 Console.WriteLine("8) Пополнить баланс");
                 Console.WriteLine("9) Просмотр баланса");
-                Console.WriteLine("10) Обновить почту (email) (Временно недоступно)");
+                Console.WriteLine("10) Поиск курсов по названию курса");
                 Console.WriteLine("0) Выход");
                 Console.Write("Ваш выбор: ");
 
@@ -65,57 +68,16 @@ namespace CourseClient.Views
                         await ShowFreeCoursesAsync();
                         break;
                     case "4":
-                        Console.Write("Введите ID курса для записи: ");
-                        if (int.TryParse(Console.ReadLine(), out var courseIdToEnroll))
-                            await EnrollToCourseAsync(courseIdToEnroll);
-                        else
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("Некорректный ID курса");
-                            Console.ResetColor();
-                            Console.WriteLine("\nНажмите любую клавишу для продолжения...");
-                            Console.ReadKey();
-                        }
+                            await EnrollToCourseAsync();
                         break;
                     case "5":
-                        Console.Write("Введите ID курса для отписки: ");
-                        if (int.TryParse(Console.ReadLine(), out var courseIdToUnenroll))
-                            await UnenrollFromCourseAsync(courseIdToUnenroll);
-                        else
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("Некорректный ID курса");
-                            Console.ResetColor();
-                            Console.WriteLine("\nНажмите любую клавишу для продолжения...");
-                            Console.ReadKey();
-                        }
+                            await UnenrollFromCourseAsync();
                         break;
                     case "6":
-                        Console.Write("Новый пароль: ");
-                        var newPassword = Console.ReadLine() ?? string.Empty;
-                        var update = await UpdatePasswordAsync(newPassword);
+                            await UpdateUserinfoAsync(_userId); 
                         break;
                     case "7":
-                        Console.Write("Точно удалить аккаунт? (y/n): ");
-                        if ((Console.ReadLine() ?? string.Empty).Trim().ToLower() == "y")
-                        {
-                            var deleted = await DeleteAccountAsync();
-                            if (deleted)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Green;
-                                Console.WriteLine("Аккаунт удалён.");
-                                Console.ResetColor();
-                                return false;
-                            }
-                            else
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("Не удалось удалить аккаунт");
-                                Console.ResetColor();
-                                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
-                                Console.ReadKey();
-                            }
-                        }
+                        await DeleteAccountAsync();
                         break;
                     case "8":
                         Console.Write("Введите сумму для пополнения баланса: ");
@@ -147,10 +109,47 @@ namespace CourseClient.Views
             }
         }
 
+
+
+        private async Task ShowinfoUser(int _userId)
+        {
+            try
+            {
+                Console.WriteLine("=========== Информация о пользователе ===========");
+                var checkouser = await _studentService.ShowinfoUser(_userId);
+
+                if (checkouser.Count == 0)
+                {
+                    Console.WriteLine("Произошла ошибка вывода информации о пользователе");
+                }
+                foreach (dynamic info in checkouser)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"   Имя: {info.first_name}");
+                    Console.WriteLine($"   Фамилия: {info.last_name}");
+                    Console.WriteLine($"   Почта: {info.user_email}");
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"   Баланс: {info.balance}");
+                    Console.ResetColor();
+                    Console.WriteLine("======================================= \n");
+                }
+            }
+            catch (DbException dbex)
+            {
+                Console.WriteLine($"Ошибка БД -> {dbex.Message}");
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine($"Внезапная ошибка -> {ex.Message}");
+            }
+
+
+        }
         private async Task ShowMyCoursesAsync()
         {
             var myCourses = await _studentService.GetMyCoursesAsync(_userId);
-           
+
             if (myCourses.Count == 0)
             {
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
@@ -161,13 +160,57 @@ namespace CourseClient.Views
                 return;
             }
 
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine("\nМои курсы:");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\n===============================================");
+            Console.WriteLine("                 МОИ КУРСЫ");
+            Console.WriteLine("===============================================");
             Console.ResetColor();
+
+            int counter = 1;
             foreach (dynamic c in myCourses)
             {
-                Console.WriteLine($"[{c.CourseId}] {c.name_course} | Цена: {c.price} | {c.data_start:d} - {c.data_end:d}");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"\nКУРС #{counter}");
+                Console.ResetColor();
+
+
+                Console.WriteLine($"   Id курса: {c.CourseId}");
+                Console.WriteLine($"   Название: {c.name_course}");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"   Цена: {c.price:F2}");
+                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"   Период: {c.data_start:dd.MM.yy} - {c.data_end:dd.MM.yy}");
+                Console.ResetColor();
+
+                
+                DateTime today = DateTime.Today;
+                if (today < c.data_start)
+                {
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.WriteLine("   Статус: Ожидается начало");
+                }
+                else if (today > c.data_end)
+                {
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine("   Статус: Завершен");
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("   Статус: В процессе");
+                }
+                Console.ResetColor();
+
+                counter++;
             }
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"\n===============================================");
+            Console.WriteLine($"Всего курсов: {myCourses.Count}");
+            Console.WriteLine("===============================================");
+            Console.ResetColor();
+
             Console.WriteLine("\nНажмите любую клавишу для продолжения...");
             Console.ReadKey();
         }
@@ -175,14 +218,42 @@ namespace CourseClient.Views
         private async Task<List<Course>> ShowAvailableCoursesAsync()
         {
             var availableCourses = await _studentService.GetAvailableCoursesAsync(_userId);
+            
+            if (availableCourses.Count == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("Нет доступных курсов для записи.");
+                Console.ResetColor();
+                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                Console.ReadKey();
+                return availableCourses;
+            }
 
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine("\nДоступные курсы:");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\n   ДОСТУПНЫЕ КУРСЫ");
+            Console.WriteLine(" ----------------------");
             Console.ResetColor();
+
+            int counter = 1;
             foreach (var c in availableCourses)
             {
-                Console.WriteLine($"[ID курса -> {c.CourseId} \n Название курса -> {c.name_course} \n Цена курса -> {c.price} \n Статус -> Не подписан]");
+                Console.WriteLine($"\n{counter}. {c.name_course}");
+                Console.WriteLine($"   ID: {c.CourseId}");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"   Цена: {c.price:F2}");
+                Console.ResetColor();
+                Console.WriteLine($"   Дата: {c.data_start:dd.MM.yy} - {c.data_end:dd.MM.yy}");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"   Статус: Не подписан");
+                Console.ResetColor();
+
+                counter++;
             }
+
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine($"\nВсего доступных курсов: {availableCourses.Count}");
+            Console.ResetColor();
+
             Console.WriteLine("\nНажмите любую клавишу для продолжения...");
             Console.ReadKey();
             return availableCourses;
@@ -192,102 +263,244 @@ namespace CourseClient.Views
         {
             var freeCourses = await _studentService.GetFreeCoursesAsync();
 
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine("\nБесплатные курсы: ");
-            Console.ResetColor();
-            foreach (dynamic c in freeCourses)
+            if (freeCourses.Count == 0)
             {
-                Console.WriteLine($"[Название курса -> {c.name_course}] \n Дата начала -> {c.data_start} \n Окончание курса -> {c.data_end}");
-            }
-            Console.WriteLine("\nНажмите любую клавишу для продолжения...");
-            Console.ReadKey();
-        }
-
-        private async Task EnrollToCourseAsync(int courseId)
-        {
-            var result = await _studentService.EnrollToCourseAsync(_userId, courseId);
-            
-            if (!result)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Ошибка при записи на курс. Возможно, курс не найден или вы уже записаны на него, или недостаточно средств.");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("Нет доступных бесплатных курсов.");
                 Console.ResetColor();
                 Console.WriteLine("\nНажмите любую клавишу для продолжения...");
                 Console.ReadKey();
                 return;
             }
 
-            var balance = await _studentService.GetBalanceAsync(_userId);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Вы подписались на курс! \n На вашем балансе осталось => {balance}");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\n===============================================");
+            Console.WriteLine("             БЕСПЛАТНЫЕ КУРСЫ");
+            Console.WriteLine("===============================================");
             Console.ResetColor();
+
+            int counter = 1;
+            foreach (dynamic c in freeCourses)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"\nКУРС #{counter}");
+                Console.ResetColor();
+
+                Console.WriteLine($"   ID: {c.CourseId}");
+                Console.WriteLine($"   Название: {c.name_course}");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"   Дата начала: {c.data_start:dd.MM.yyyy}");
+                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"   Дата окончания: {c.data_end:dd.MM.yyyy}");
+                Console.ResetColor();
+
+                counter++;
+            }
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"\n===============================================");
+            Console.WriteLine($"Всего бесплатных курсов: {freeCourses.Count}");
+            Console.WriteLine("===============================================");
+            Console.ResetColor();
+
             Console.WriteLine("\nНажмите любую клавишу для продолжения...");
             Console.ReadKey();
         }
 
-        private async Task UnenrollFromCourseAsync(int courseId)
+        private async Task EnrollToCourseAsync()
         {
-            var result = await _studentService.UnenrollFromCourseAsync(_userId, courseId);
-            
-            if (result)
+            var visualcourse = await ShowAvailableCoursesAsync();
+            if (visualcourse.Count == 0)
             {
+                return;
+            }
+            Console.WriteLine("\n===============================================");
+            Console.Write("Введите ID курса для записи: ");
+            if (int.TryParse(Console.ReadLine(), out var courseIdToEnroll))
+            {
+                var result = await _studentService.EnrollToCourseAsync(_userId, courseIdToEnroll);
+                if (!result)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Ошибка при записи на курс. Возможно, курс не найден или вы уже записаны на него, или недостаточно средств.");
+                    Console.ResetColor();
+                    Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                    Console.ReadKey();
+                    return;
+                }
+
+                var balance = await _studentService.GetBalanceAsync(_userId);
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Вы отписались от курса");
+                Console.WriteLine($"Вы подписались на курс! \n На вашем балансе осталось => {balance}");
                 Console.ResetColor();
+                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                Console.ReadKey();
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Такого курса нету");
+                Console.WriteLine("Некорректный ID курса");
                 Console.ResetColor();
+                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                Console.ReadKey();
             }
+        }
+
+        private async Task UnenrollFromCourseAsync()
+        {
+            await ShowMyCoursesAsync();
+
+            Console.WriteLine("\n===============================================");
+            Console.Write("Введите ID курса для отписки: ");
+            if (int.TryParse(Console.ReadLine(), out var courseIdToUnenroll))
+            {
+                var result = await _studentService.UnenrollFromCourseAsync(_userId, courseIdToUnenroll);
+
+                if (result)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Вы отписались от курса");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Такого курса нету");
+                    Console.ResetColor();
+                }
+                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                Console.ReadKey();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Некорректный ID курса");
+                Console.ResetColor();
+                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                Console.ReadKey();
+            }  
+        }
+
+        private async Task<bool> UpdateUserinfoAsync(int userId)
+        {
+            Console.Clear();
+            Console.WriteLine("\nЧто вы хотите обновить?");
+            Console.WriteLine("1) Пароль");
+            Console.WriteLine("2) Email");
+            Console.Write("Ваш выбор: ");
+
+            if (int.TryParse(Console.ReadLine(), out var editing))
+            {
+                switch (editing)
+                {
+                    case 1:
+                        Console.Write("Введите новый пароль: ");
+                        var newPassword = Console.ReadLine() ?? string.Empty;
+                        var passwordResult = await _studentService.UpdatePasswordAsync(userId, newPassword);
+                        if (!passwordResult)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Ошибка: некорректный пароль");
+                            Console.ResetColor();
+                            Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                            Console.ReadKey();
+                            return false;
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Пароль успешно обновлен");
+                            Console.ResetColor();
+                            Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                            Console.ReadKey();
+                            return true;
+                        }
+                    case 2:
+                        Console.Write("Введите новый email: ");
+                        var newEmail = Console.ReadLine() ?? string.Empty;
+                        var emailResult = await _studentService.UpdateEmailAsync(userId, newEmail);
+                        if (!emailResult)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Ошибка: некорректный email адрес");
+                            Console.ResetColor();
+                            Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                            Console.ReadKey();
+                            return false;
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Email успешно обновлен");
+                            Console.ResetColor();
+                            Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                            Console.ReadKey();
+                            return true;
+                        }
+                    default:
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Неверный выбор");
+                        Console.ResetColor();
+                        Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                        Console.ReadKey();
+                        return false;
+                }
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Некорректный ввод");
+                Console.ResetColor();
+                return false;
+            }
+        }
+
+        
+        private async Task<int> DeleteAccountAsync()
+        {
+            Console.Clear();
+            Console.Write("Точно удалить аккаунт? (y/n): ");
+            if ((Console.ReadLine() ?? string.Empty).Trim().ToLower() == "y")
+            {
+                Console.Write("Для того чтобы удалить аккаунт, введите пароль: ");
+                var password = Console.ReadLine() ?? string.Empty;
+                var check = await _studentService.Checkpassword(password, _userId);
+                if (!check)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Пароли не совпадают! Повторите попытку");
+                    Console.ResetColor();
+                    Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                    Console.ReadKey();
+                    return 0;
+                }
+                var deleted = await _studentService.DeleteAccountAsync(_userId);
+
+                if (deleted)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Аккаунт удалён");
+                    Console.ResetColor();
+                    Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                    Console.ReadKey();
+                    Environment.Exit(0);
+                    return 2;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Не удалось удалить аккаунт");
+                    Console.ResetColor();
+                    Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                    Console.ReadKey();
+                    return 0;
+                }
+            }
+            Console.WriteLine("Удаление отменено");
             Console.WriteLine("\nНажмите любую клавишу для продолжения...");
             Console.ReadKey();
-        }
-
-        private async Task<bool> UpdatePasswordAsync(string newPassword)
-        {
-            if (string.IsNullOrEmpty(newPassword))
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Пустое значение");
-                Console.ResetColor();
-                return false;
-            }
-            if (newPassword.Length < 8)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Пароль должен быть больше 8 символов");
-                Console.ResetColor();
-                return false;
-            }
-
-            var result = await _studentService.UpdatePasswordAsync(_userId, newPassword);
-            
-            if (result)
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Пароль обновлён");
-                Console.ResetColor();
-                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
-                Console.ReadKey();
-                return true;
-            }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Ошибка обновления пароля");
-                Console.ResetColor();
-                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
-                Console.ReadKey();
-                return false;
-            }
-        }
-
-
-        private async Task<bool> DeleteAccountAsync()
-        {
-            return await _studentService.DeleteAccountAsync(_userId);
+            return 0;
         }
 
         private async Task<bool> ReplenishmentbalanceAsync(decimal replenishmentofbalance)

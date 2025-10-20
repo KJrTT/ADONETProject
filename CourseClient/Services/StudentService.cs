@@ -7,6 +7,8 @@ using CourseClient.Data;
 using CourseClient.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
+using System.Data.Common;
+using System.Text.RegularExpressions;
 
 namespace CourseClient.Services
 {
@@ -21,10 +23,27 @@ namespace CourseClient.Services
         Task<bool> DeleteAccountAsync(int userId);
         Task<bool> ReplenishBalanceAsync(int userId, decimal amount);
         Task<decimal> GetBalanceAsync(int userId);
+        Task<List<object>> ShowinfoUser(int userId);
+        Task<bool> UpdateEmailAsync(int userId, string newEmail);
+        Task<bool> Checkpassword(string password, int userId);
     }
 
     internal class StudentService : IStudentService
     {
+        public async Task<List<object>> ShowinfoUser(int _userId)
+        {
+            using var db = new AppDbContext();
+
+            var checkouser = await db.Users.Where(u => u.UserId == _userId).Select(u => new
+            {
+                u.first_name,
+                u.last_name,
+                u.user_email,
+                u.Wallet.balance
+            }).ToListAsync();
+
+            return checkouser.Cast<object>().ToList();
+        }
         public async Task<List<object>> GetMyCoursesAsync(int userId)
         {
             using var db = new AppDbContext();
@@ -132,7 +151,7 @@ namespace CourseClient.Services
 
         public async Task<bool> UpdatePasswordAsync(int userId, string newPassword)
         {
-            if (string.IsNullOrEmpty(newPassword) || newPassword.Length < 8)
+            if (!ValidPassword(newPassword))
             {
                 return false;
             }
@@ -146,6 +165,24 @@ namespace CourseClient.Services
             return updatedRows == 1;
         }
 
+        public async Task<bool> UpdateEmailAsync(int userId, string newEmail)
+        {
+            if (string.IsNullOrEmpty(newEmail))
+            {
+                return false;
+            }
+
+            if (!ValidEmail(newEmail))
+            {
+                return false;
+            }
+
+            using var db = new AppDbContext();
+
+            var updatedRows = await db.Users.Where(u => u.UserId == userId).ExecuteUpdateAsync(setters => setters.SetProperty(u => u.user_email, newEmail));
+
+            return updatedRows == 1;
+        }
         public async Task<bool> DeleteAccountAsync(int userId)
         {
             using var db = new AppDbContext();
@@ -170,16 +207,43 @@ namespace CourseClient.Services
             {
                 return false;
             }
+            
+            try
+            {
+                using var db = new AppDbContext();
 
-            using var db = new AppDbContext();
+                var walletId = await db.Users.Where(u => u.UserId == userId).Select(u => u.wallet_id).FirstOrDefaultAsync();
+                
+                if (amount > 99999999.99m) 
+                {
+                    Console.WriteLine("Сумма слишком большая. Максимальная сумма: 99 999 999.99");
+                    return false;
+                }
 
-            var walletId = await db.Users.Where(u => u.UserId == userId).Select(u => u.wallet_id).FirstOrDefaultAsync();
+                var currentBalance = await db.Wallets.Where(w => w.WalletId == walletId).Select(w => w.balance).FirstOrDefaultAsync();
 
-            var currentBalance = await db.Wallets.Where(w => w.WalletId == walletId).Select(w => w.balance).FirstOrDefaultAsync();
+                var updatedRows = await db.Wallets.Where(w => w.WalletId == walletId).ExecuteUpdateAsync(setters => setters.SetProperty(w => w.balance, currentBalance + amount));
+                if (updatedRows > 99999999.99m)
+                {
+                    Console.WriteLine("Итоговый баланс превысит максимально допустимое значение");
+                    return false;
+                }
 
-            var updatedRows = await db.Wallets.Where(w => w.WalletId == walletId).ExecuteUpdateAsync(setters => setters.SetProperty(w => w.balance, currentBalance + amount));
-
-            return updatedRows == 1;
+                return updatedRows == 1;
+            }
+            catch (DbException dbex) { 
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Ошибка БД-> {dbex.Message}");
+                Console.ResetColor();
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Ошибка -> {ex.Message}");
+                Console.ResetColor();
+                return false;
+            }
         }
 
         public async Task<decimal> GetBalanceAsync(int userId)
@@ -191,6 +255,14 @@ namespace CourseClient.Services
             var balance = await db.Wallets.Where(w => w.WalletId == walletId).Select(w => w.balance).FirstOrDefaultAsync();
 
             return balance;
+        }
+        public async Task<bool> Checkpassword(string password, int userId)
+        {
+            using var db = new AppDbContext();
+            var hashpassword = HashPassword(password);
+            var checkpassword = await db.Users.Where(u => u.UserId == userId && u.password == hashpassword).FirstOrDefaultAsync();
+
+            return checkpassword != null;
         }
 
         private static string HashPassword(string password)
@@ -204,6 +276,89 @@ namespace CourseClient.Services
                     builder.Append(bytes[i].ToString("x2"));
                 }
                 return builder.ToString();
+            }
+        }
+
+        public static bool ValidEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return false;
+            }
+
+            try
+            {
+                string pattern = @"^[a-zA-Z0-9.!#$&'*+/=?^_`{|}~-]+" +
+            @"@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?" +
+            @"(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
+
+                var isValid = Regex.IsMatch(email, pattern);
+                if (isValid && email.Contains("%00"))
+                    return false;
+
+                return isValid;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        
+
+        public static bool ValidPassword(string password)
+        {
+            if (string.IsNullOrEmpty(password))
+            {
+                return false;
+            }
+
+            try
+            {
+                if (password.Length < 8)
+                {
+                    return false;
+                }
+
+                string upperCasePattern = @"[A-Z]";
+                if (!Regex.IsMatch(password, upperCasePattern))
+                {
+                    return false;
+                }
+
+                string lowerCasePattern = @"[a-z]";
+                if (!Regex.IsMatch(password, lowerCasePattern))
+                {
+                    return false;
+                }
+
+                string digitPattern = @"[0-9]";
+                if (!Regex.IsMatch(password, digitPattern))
+                {
+                    return false;
+                }
+
+                string specialCharPattern = @"[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]";
+                if (!Regex.IsMatch(password, specialCharPattern))
+                {
+                    return false;
+                }
+
+                if (password.Contains(" "))
+                {
+                    return false;
+                }
+
+                string[] commonPasswords = { "password", "123456", "qwerty", "admin" };
+                if (commonPasswords.Contains(password.ToLower()))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
     }
