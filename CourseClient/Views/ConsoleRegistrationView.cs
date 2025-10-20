@@ -20,34 +20,53 @@ namespace CourseClient.Views
         {
             while (true)
             {
+                
                 Console.Clear();
                 Console.WriteLine("\n- Введите данные для регистрации -");
 
                 Console.Write("Имя: ");
                 string firstName = Console.ReadLine() ?? string.Empty;
-
+                
+                while (!ValidFirstName.ValidFirstNamefunction(firstName))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Имя заполнено некорректно!\n");
+                    Console.ResetColor();
+                    Console.Write("Пожалуйста, введите имя еще раз: ");
+                    firstName = Console.ReadLine() ?? string.Empty;
+                }
+                
                 Console.Write("Фамилия: ");
                 string lastName = Console.ReadLine() ?? string.Empty;
+
+                while (!ValidLastName.ValidLastNamefunction(lastName))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Фамилия заполнена некорректно!\n");
+                    Console.ResetColor();
+                    Console.Write("Пожалуйста, введите фамилию еще раз: ");
+                    lastName = Console.ReadLine() ?? string.Empty;
+                }
 
                 Console.Write("Email: ");
                 string email = Console.ReadLine() ?? string.Empty;
 
-                Console.Write("Введите пароль: ");
-                string password = Console.ReadLine() ?? string.Empty;
-                Console.Write("\nПовторите пароль: ");
-                string Confirmationpassword = Console.ReadLine() ?? string.Empty;
-                
-                Console.WriteLine("\nРегистрируем...");
-
-                bool hasErrors = false;
-                if (password != Confirmationpassword)
+                while (!IsValidEmail.ValidEmail(email))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Пароли не совпадают!");
+                    Console.WriteLine("Email некорректен!\n");
                     Console.ResetColor();
-                    hasErrors = true;
+                    Console.Write("Пожалуйста, введите email еще раз: ");
+                    email = Console.ReadLine() ?? string.Empty;
                 }
+                bool hasErrors = false;
+                string password = string.Empty;
+                string Confirmationpassword = string.Empty;
+
+                Console.Write("Введите пароль: ");
+                password = Console.ReadLine() ?? string.Empty;
                 var passwordValidation = await ValidPassword(password);
+
                 if (!passwordValidation.isValid)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -55,28 +74,18 @@ namespace CourseClient.Views
                     Console.ResetColor();
                     hasErrors = true;
                 }
-                if (!ValidFirstName.ValidFirstNamefunction(firstName))
+                else
                 {
+                    Console.Write("\nПовторите пароль: ");
+                    Confirmationpassword = Console.ReadLine() ?? string.Empty;
 
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Имя заполнено некорректно");
-                    Console.ResetColor();
-                    hasErrors = true;
-                }
-                if (!ValidLastName.ValidLastNamefunction(lastName))
-                {
-
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Фамилия заполнена некорректно");
-                    Console.ResetColor();
-                    hasErrors = true;
-                }
-                if (!IsValidEmail.ValidEmail(email))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Почта некорректна");
-                    Console.ResetColor();
-                    hasErrors = true;
+                    if (password != Confirmationpassword)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Пароли не совпадают!");
+                        Console.ResetColor();
+                        hasErrors = true;
+                    }
                 }
 
                 if (hasErrors)
@@ -89,6 +98,7 @@ namespace CourseClient.Views
                     break;
                 }
 
+                Console.WriteLine("\nРегистрируем...");
                 try
                 { 
                     var result = await _registrationService.RegisterClientAsync(firstName, lastName, email, password);
