@@ -13,7 +13,7 @@ namespace CourseClient.Services
         Task<List<Course>> GetMyCoursesAsync(int teacherId);
         Task<List<User>> GetEnrolledUsersAsync(int teacherId, int courseId);
         Task<bool> DeleteOwnCourseAsync(int teacherId, int courseId);
-        Task<bool> CreateCourseAsync(int teacherId, string name, DateTime startDate, DateTime endDate, decimal price);
+        Task<(bool Success, string ErrorMessage)> CreateCourseAsync(int teacherId, string name, DateTime startDate, DateTime endDate, decimal price);
     }
 
     public sealed class TeacherService : ITeacherService
@@ -85,30 +85,58 @@ namespace CourseClient.Services
             }
         }
 
-        public async Task<bool> CreateCourseAsync(int teacherId, string name, DateTime startDate, DateTime endDate, decimal price)
+        public async Task<(bool Success, string ErrorMessage)> CreateCourseAsync(int teacherId, string name, DateTime startDate, DateTime endDate, decimal price)
         {
+            // Валидация названия курса
             if (string.IsNullOrWhiteSpace(name))
-                return false;
+                return (false, "Название курса не может быть пустым");
+
+            var trimmedName = name.Trim();
+            if (trimmedName.Length < 3)
+                return (false, "Название курса должно содержать минимум 3 символа");
+
+            if (trimmedName.Length > 100)
+                return (false, "Название курса не может превышать 100 символов");
+
+            // Валидация дат
+            var today = DateTime.Today;
+            if (startDate < today)
+                return (false, "Дата начала курса не может быть в прошлом");
 
             if (endDate < startDate)
-                return false;
+                return (false, "Дата окончания курса не может быть раньше даты начала");
 
+            var maxEndDate = startDate.AddYears(3);
+            if (endDate > maxEndDate)
+                return (false, "Курс не может длиться более 3 лет");
+
+            // Валидация цены
             if (price < 0)
-                return false;
+                return (false, "Цена курса не может быть отрицательной");
 
-            using var db = new AppDbContext();
-            var course = new Course
+            if (price > 1000000)
+                return (false, "Цена курса не может превышать 1,000,000");
+
+            try
             {
-                name_course = name.Trim(),
-                data_start = startDate,
-                data_end = endDate,
-                price = price,
-                UserID = teacherId
-            };
+                using var db = new AppDbContext();
+                var course = new Course
+                {
+                    name_course = trimmedName,
+                    data_start = startDate,
+                    data_end = endDate,
+                    price = price,
+                    UserID = teacherId
+                };
 
-            await db.Courses.AddAsync(course);
-            await db.SaveChangesAsync();
-            return true;
+                await db.Courses.AddAsync(course);
+                await db.SaveChangesAsync();
+                return (true, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Ошибка при сохранении курса: {ex.Message}");
+            }
         }
     }
 }
