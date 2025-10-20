@@ -20,6 +20,144 @@ namespace CourseClient.Views
             _teacherService = teacherService;
         }
 
+        #region Вспомогательные методы валидации
+
+        private static bool ValidateCourseName(string name, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                errorMessage = "Название курса не может быть пустым";
+                return false;
+            }
+
+            var trimmedName = name.Trim();
+            if (trimmedName.Length < 3)
+            {
+                errorMessage = "Название курса должно содержать минимум 3 символа";
+                return false;
+            }
+
+            if (trimmedName.Length > 100)
+            {
+                errorMessage = "Название курса не может превышать 100 символов";
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool ValidateDate(DateTime date, bool isStartDate, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (isStartDate && date < DateTime.Today)
+            {
+                errorMessage = "Дата начала курса не может быть в прошлом";
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool ValidateDateRange(DateTime startDate, DateTime endDate, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (endDate < startDate)
+            {
+                errorMessage = "Дата окончания курса не может быть раньше даты начала";
+                return false;
+            }
+
+            var maxEndDate = startDate.AddYears(3);
+            if (endDate > maxEndDate)
+            {
+                errorMessage = "Курс не может длиться более 3 лет";
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool ValidatePrice(decimal price, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (price < 0)
+            {
+                errorMessage = "Цена курса не может быть отрицательной";
+                return false;
+            }
+
+            if (price > 1000000)
+            {
+                errorMessage = "Цена курса не может превышать 1,000,000";
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool ValidateCourseId(string input, List<Course> availableCourses, out int courseId, out string errorMessage)
+        {
+            courseId = 0;
+            errorMessage = string.Empty;
+
+            if (!int.TryParse(input, out courseId))
+            {
+                errorMessage = "Некорректный формат ID. Введите число";
+                return false;
+            }
+
+            if (courseId <= 0)
+            {
+                errorMessage = "ID курса должен быть положительным числом";
+                return false;
+            }
+
+            var courseIdToCheck = courseId;
+            var courseExists = availableCourses.Any(c => c.CourseId == courseIdToCheck);
+            if (!courseExists)
+            {
+                errorMessage = "Курс с таким ID не найден среди ваших курсов";
+                return false;
+            }
+
+            return true;
+        }
+
+        private static void DisplayError(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        private static void DisplaySuccess(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        private static void DisplayWarning(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        private static void DisplayInfo(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        #endregion
+
         public async Task<bool> RunAsync()
         {
             while (true)
@@ -65,17 +203,13 @@ namespace CourseClient.Views
             var courses = await _teacherService.GetMyCoursesAsync(_teacherId);
             if (courses.Count == 0)
             {
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine("У вас пока нет созданных курсов.");
-                Console.ResetColor();
+                DisplayWarning("У вас пока нет созданных курсов.");
                 Console.WriteLine("\nНажмите любую клавишу для продолжения...");
                 Console.ReadKey();
                 return;
             }
 
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine("\n— Ваши курсы —");
-            Console.ResetColor();
+            DisplayInfo("\n— Ваши курсы —");
             foreach (var c in courses)
             {
                 Console.WriteLine($"ID: {c.CourseId} | {c.name_course} | {c.data_start:yyyy-MM-dd} → {c.data_end:yyyy-MM-dd} | {c.price:C}");
@@ -86,54 +220,84 @@ namespace CourseClient.Views
 
         private async Task CreateCourseAsync()
         {
-            Console.Write("Название курса: ");
-            var name = Console.ReadLine() ?? string.Empty;
-
-            Console.Write("Дата начала (yyyy-MM-dd): ");
-            if (!DateTime.TryParse(Console.ReadLine(), out DateTime startDate))
+            Console.WriteLine("\n=== СОЗДАНИЕ КУРСА ===");
+            
+            // Ввод названия курса
+            string name;
+            do
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Некорректная дата начала");
-                Console.ResetColor();
-                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
-                Console.ReadKey();
-                return;
-            }
+                Console.Write("Название курса (3-100 символов): ");
+                name = Console.ReadLine() ?? string.Empty;
+                
+                if (!ValidateCourseName(name, out string errorMessage))
+                {
+                    DisplayError(errorMessage);
+                }
+            } while (!ValidateCourseName(name, out _));
 
-            Console.Write("Дата окончания (yyyy-MM-dd): ");
-            if (!DateTime.TryParse(Console.ReadLine(), out DateTime endDate))
+            // Ввод даты начала
+            DateTime startDate;
+            string startDateInput;
+            do
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Некорректная дата окончания");
-                Console.ResetColor();
-                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
-                Console.ReadKey();
-                return;
-            }
+                Console.Write("Дата начала (yyyy-MM-dd, не раньше сегодня): ");
+                startDateInput = Console.ReadLine();
+                
+                if (!DateTime.TryParse(startDateInput, out startDate))
+                {
+                    DisplayError("Некорректный формат даты. Используйте формат yyyy-MM-dd");
+                }
+                else if (!ValidateDate(startDate, true, out string errorMessage))
+                {
+                    DisplayError(errorMessage);
+                }
+            } while (!DateTime.TryParse(startDateInput, out startDate) || !ValidateDate(startDate, true, out _));
 
-            Console.Write("Цена: ");
-            if (!decimal.TryParse(Console.ReadLine(), out decimal price))
+            // Ввод даты окончания
+            DateTime endDate;
+            string endDateInput;
+            do
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Некорректная цена");
-                Console.ResetColor();
-                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
-                Console.ReadKey();
-                return;
-            }
+                Console.Write("Дата окончания (yyyy-MM-dd, максимум 3 года от начала): ");
+                endDateInput = Console.ReadLine();
+                
+                if (!DateTime.TryParse(endDateInput, out endDate))
+                {
+                    DisplayError("Некорректный формат даты. Используйте формат yyyy-MM-dd");
+                }
+                else if (!ValidateDateRange(startDate, endDate, out string errorMessage))
+                {
+                    DisplayError(errorMessage);
+                }
+            } while (!DateTime.TryParse(endDateInput, out endDate) || !ValidateDateRange(startDate, endDate, out _));
 
-            var ok = await _teacherService.CreateCourseAsync(_teacherId, name, startDate, endDate, price);
-            if (ok)
+            // Ввод цены
+            decimal price;
+            string priceInput;
+            do
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Курс добавлен");
-                Console.ResetColor();
+                Console.Write("Цена курса (0 - 1,000,000): ");
+                priceInput = Console.ReadLine();
+                
+                if (!decimal.TryParse(priceInput, out price))
+                {
+                    DisplayError("Некорректный формат цены. Введите число");
+                }
+                else if (!ValidatePrice(price, out string errorMessage))
+                {
+                    DisplayError(errorMessage);
+                }
+            } while (!decimal.TryParse(priceInput, out price) || !ValidatePrice(price, out _));
+
+            // Создание курса
+            var result = await _teacherService.CreateCourseAsync(_teacherId, name, startDate, endDate, price);
+            if (result.Success)
+            {
+                DisplaySuccess("Курс успешно создан!");
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Не удалось добавить курс. Проверьте данные.");
-                Console.ResetColor();
+                DisplayError($"Ошибка: {result.ErrorMessage}");
             }
 
             Console.WriteLine("\nНажмите любую клавишу для продолжения...");
@@ -142,47 +306,101 @@ namespace CourseClient.Views
 
         private async Task ShowEnrolledUsersAsync()
         {
-            Console.Write("Введите ID курса: ");
-            if (!int.TryParse(Console.ReadLine(), out int courseId))
+            Console.WriteLine("\n=== ПРОСМОТР ЗАПИСАННЫХ ПОЛЬЗОВАТЕЛЕЙ ===");
+            
+            // Сначала показываем доступные курсы
+            var courses = await _teacherService.GetMyCoursesAsync(_teacherId);
+            if (courses.Count == 0)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Некорректный ID курса");
-                Console.ResetColor();
+                DisplayWarning("У вас пока нет созданных курсов.");
                 Console.WriteLine("\nНажмите любую клавишу для продолжения...");
                 Console.ReadKey();
                 return;
             }
+
+            DisplayInfo("\n— Ваши курсы —");
+            foreach (var c in courses)
+            {
+                Console.WriteLine($"ID: {c.CourseId} | {c.name_course} | {c.data_start:yyyy-MM-dd} → {c.data_end:yyyy-MM-dd}");
+            }
+
+            // Ввод ID курса с валидацией
+            int courseId;
+            string courseIdInput;
+            do
+            {
+                Console.Write("\nВведите ID курса: ");
+                courseIdInput = Console.ReadLine();
+                
+                if (!ValidateCourseId(courseIdInput, courses, out courseId, out string errorMessage))
+                {
+                    DisplayError(errorMessage);
+                }
+            } while (!ValidateCourseId(courseIdInput, courses, out courseId, out _));
 
             var users = await _teacherService.GetEnrolledUsersAsync(_teacherId, courseId);
             if (users.Count == 0)
             {
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine("Либо курс не ваш, либо на курс пока никто не записан.");
-                Console.ResetColor();
-                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
-                Console.ReadKey();
-                return;
+                DisplayWarning("На курс пока никто не записан.");
+            }
+            else
+            {
+                DisplayInfo($"\n— Записанные пользователи (всего: {users.Count}) —");
+                foreach (var u in users)
+                {
+                    Console.WriteLine($"ID: {u.UserId} | {u.last_name} {u.first_name} | {u.user_email}");
+                }
             }
 
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine("\n— Записанные пользователи —");
-            Console.ResetColor();
-            foreach (var u in users)
-            {
-                Console.WriteLine($"ID: {u.UserId} | {u.last_name} {u.first_name} | {u.user_email}");
-            }
             Console.WriteLine("\nНажмите любую клавишу для продолжения...");
             Console.ReadKey();
         }
 
         private async Task DeleteOwnCourseAsync()
         {
-            Console.Write("Введите ID курса для удаления: ");
-            if (!int.TryParse(Console.ReadLine(), out int courseId))
+            Console.WriteLine("\n=== УДАЛЕНИЕ КУРСА ===");
+            
+            // Сначала показываем доступные курсы
+            var courses = await _teacherService.GetMyCoursesAsync(_teacherId);
+            if (courses.Count == 0)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Некорректный ID курса");
-                Console.ResetColor();
+                DisplayWarning("У вас пока нет созданных курсов.");
+                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                Console.ReadKey();
+                return;
+            }
+
+            DisplayInfo("\n— Ваши курсы —");
+            foreach (var c in courses)
+            {
+                Console.WriteLine($"ID: {c.CourseId} | {c.name_course} | {c.data_start:yyyy-MM-dd} → {c.data_end:yyyy-MM-dd} | {c.price:C}");
+            }
+
+            // Ввод ID курса с валидацией
+            int courseId;
+            string courseIdInput;
+            do
+            {
+                Console.Write("\nВведите ID курса для удаления: ");
+                courseIdInput = Console.ReadLine();
+                
+                if (!ValidateCourseId(courseIdInput, courses, out courseId, out string errorMessage))
+                {
+                    DisplayError(errorMessage);
+                }
+            } while (!ValidateCourseId(courseIdInput, courses, out courseId, out _));
+
+            // Подтверждение удаления
+            var courseToDelete = courses.First(c => c.CourseId == courseId);
+            DisplayWarning($"\nВы действительно хотите удалить курс:");
+            Console.WriteLine($"\"{courseToDelete.name_course}\" (ID: {courseToDelete.CourseId})?");
+            Console.WriteLine("Это действие нельзя отменить!");
+            Console.Write("Введите 'ДА' для подтверждения или любую другую строку для отмены: ");
+            
+            var confirmation = Console.ReadLine();
+            if (confirmation?.ToUpper() != "ДА")
+            {
+                DisplayWarning("Удаление отменено");
                 Console.WriteLine("\nНажмите любую клавишу для продолжения...");
                 Console.ReadKey();
                 return;
@@ -191,16 +409,13 @@ namespace CourseClient.Views
             var result = await _teacherService.DeleteOwnCourseAsync(_teacherId, courseId);
             if (result)
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Курс удален");
-                Console.ResetColor();
+                DisplaySuccess("Курс успешно удален");
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Не удалось удалить курс (возможно, это не ваш курс)");
-                Console.ResetColor();
+                DisplayError("Не удалось удалить курс. Попробуйте позже");
             }
+            
             Console.WriteLine("\nНажмите любую клавишу для продолжения...");
             Console.ReadKey();
         }
