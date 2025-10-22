@@ -32,6 +32,7 @@ namespace CourseClient.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Wallet>().ToTable(tb => tb.UseSqlOutputClause(false));
             // LevelAccess
             modelBuilder.Entity<LevelAccess>(entity =>
             {
