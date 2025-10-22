@@ -1,5 +1,5 @@
 -- Создание таблицы UserDeletionLog
-CREATE TABLE bloo.UserDeletionLog (
+CREATE TABLE UserDeletionLog (
     log_id INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     UserId INT NOT NULL,
     first_name NVARCHAR(255) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE bloo.UserDeletionLog (
 
 
 
-CREATE TABLE dbo.Transactions (
+CREATE TABLE Transactions (
     transaction_id INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
     type VARCHAR(10) NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE dbo.Transactions (
 
 
 
-CREATE TABLE dbo.UserUpdateLog (
+CREATE TABLE UserUpdateLog (
     log_id INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     UserId INT NOT NULL,
     update_date DATETIME2(7) NOT NULL,
@@ -84,3 +84,68 @@ INSERT INTO LevelAccess (Title) VALUES
 ('Admin'),
 ('Teacher'),
 ('banned');
+
+--- Триггеры
+
+ALTER TRIGGER [dbo].[after_wallet_update]
+ON [dbo].[Wallets]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+   
+    IF NOT UPDATE(balance)
+        RETURN;
+
+    INSERT INTO Transactions (wallet_id, amount, type, description, created_at)
+    SELECT
+        i.WalletId,
+        i.balance - d.balance,
+        CASE
+            WHEN i.balance > d.balance THEN 'deposit'
+            WHEN i.balance < d.balance THEN 'withdrawal'
+        END AS type,
+        CASE
+            WHEN i.balance > d.balance THEN 'Пополнение баланса'
+            WHEN i.balance < d.balance THEN 'Оплата курса'
+        END AS description,
+        GETDATE()
+    FROM inserted i
+    INNER JOIN deleted d ON i.WalletId = d.WalletId
+    WHERE i.balance <> d.balance;
+END
+
+ALTER TRIGGER [dbo].[usersupdatelog]
+   ON  [dbo].[Users]
+   AFTER UPDATE
+AS
+BEGIN
+SET NOCOUNT ON;
+
+insert into UserUpdateLog (UserId, update_date, password, user_email)
+select UserId, GETDATE(), password, user_email
+from deleted d
+where Exists(
+select 1
+from inserted i
+where i.UserId = d.UserId
+and (i.user_email != d.user_email or i.password != d.password)
+);
+
+
+
+END
+
+
+ALTER TRIGGER [dbo].[deleteuser]
+   ON  [dbo].[Users]
+   AFTER delete
+AS
+BEGIN
+SET NOCOUNT ON;
+
+    insert into UserDeletionLog (UserId, first_name, last_name, user_email, level_access_id, wallet_id, deletion_date)
+select UserId, first_name, last_name, user_email, level_access_id, wallet_id, GETDATE()
+from deleted d
+
+END
