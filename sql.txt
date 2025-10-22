@@ -1,0 +1,86 @@
+-- Создание таблицы UserDeletionLog
+CREATE TABLE bloo.UserDeletionLog (
+    log_id INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    UserId INT NOT NULL,
+    first_name NVARCHAR(255) NOT NULL,
+    last_name NVARCHAR(255) NOT NULL,
+    user_email NVARCHAR(255) NOT NULL,
+    level_access_id INT NULL,
+    wallet_id INT NULL,
+    deletion_date DATETIME2(7) NOT NULL
+);
+
+
+
+CREATE TABLE dbo.Transactions (
+    transaction_id INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    type VARCHAR(10) NOT NULL,
+    description NVARCHAR(255) NULL,
+    created_at DATETIME2(7) NULL,
+    wallet_id INT NULL
+);
+
+
+
+CREATE TABLE dbo.UserUpdateLog (
+    log_id INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    UserId INT NOT NULL,
+    update_date DATETIME2(7) NOT NULL,
+    password NVARCHAR(255) NOT NULL,
+    user_email NVARCHAR(255) NOT NULL
+);
+
+
+
+CREATE TABLE LevelAccess (
+    AccessId INT IDENTITY(1,1) PRIMARY KEY,
+    Title NVARCHAR(255) UNIQUE NOT NULL
+);
+
+
+CREATE TABLE Wallets (
+    WalletId INT IDENTITY(1,1) PRIMARY KEY,
+    balance DECIMAL(10,2) NOT NULL DEFAULT 0
+);
+
+
+CREATE TABLE Users (
+    UserId INT IDENTITY(1,1) PRIMARY KEY,
+    first_name NVARCHAR(255) NOT NULL,
+    last_name NVARCHAR(255) NOT NULL,
+    password NVARCHAR(300) NOT NULL,
+    user_email NVARCHAR(255) NOT NULL UNIQUE,
+    level_access_id INT NOT NULL,
+    wallet_id INT NOT NULL,
+    FOREIGN KEY (level_access_id) REFERENCES LevelAccess(AccessId),
+    FOREIGN KEY (wallet_id) REFERENCES Wallets(WalletId) 
+);
+
+
+CREATE TABLE Courses ( 
+    CourseId INT IDENTITY(1,1) PRIMARY KEY,
+    name_course NVARCHAR(255) NOT NULL,
+    data_start DATETIME NOT NULL,
+    data_end DATETIME NOT NULL,
+    price DECIMAL(10,2) NULL,
+    UserId INT NOT NULL, 
+    FOREIGN KEY (UserId) REFERENCES Users(UserId)
+);
+
+
+CREATE TABLE UserCourses (
+    UserCourseId INT IDENTITY(1,1) PRIMARY KEY, 
+    CourseId INT NOT NULL,
+    UserId INT NOT NULL,
+    UNIQUE (CourseId, UserId),
+    FOREIGN KEY (CourseId) REFERENCES Courses(CourseId), 
+    FOREIGN KEY (UserId) REFERENCES Users(UserId)
+);
+
+
+INSERT INTO LevelAccess (Title) VALUES 
+('Student'),
+('Admin'),
+('Teacher'),
+('banned');
