@@ -27,7 +27,7 @@ namespace CourseClient.Services
         {
             using var db = new AppDbContext();
 
-            // Сначала находим пользователя по email
+            
             var user = await db.Users
                 .Include(u => u.LevelAccess)
                 .SingleOrDefaultAsync(u => u.user_email == email);
@@ -37,7 +37,7 @@ namespace CourseClient.Services
                 return new LoginResult { Success = false };
             }
 
-            // Хешируем введенный пароль и сравниваем с сохраненным хешем
+            
             string hashedPassword = HashPassword(password);
             if (user.password != hashedPassword)
             {
